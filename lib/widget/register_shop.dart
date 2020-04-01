@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodung/utility/my_style.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RegisterShop extends StatefulWidget {
   @override
@@ -10,6 +11,20 @@ class _RegisterShopState extends State<RegisterShop> {
   // Field
 
   // Method
+  Widget showMap() {
+    LatLng centerLatLng = LatLng(13.673705, 100.606614);
+    CameraPosition cameraPosition = CameraPosition(
+      target: centerLatLng,
+      zoom: 16.0,
+    );
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.3,
+      child: GoogleMap(initialCameraPosition: cameraPosition,
+      onMapCreated: (value){},),
+    );
+  }
+
   Widget nameForm() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -141,6 +156,7 @@ class _RegisterShopState extends State<RegisterShop> {
         MyStyle().mySizeBox(),
         phoneForm(),
         MyStyle().mySizeBox(),
+        showMap(),
       ],
     );
   }
