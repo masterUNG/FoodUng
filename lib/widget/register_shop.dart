@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:foodung/utility/my_constant.dart';
 import 'package:foodung/utility/my_style.dart';
 import 'package:foodung/utility/normal_dialog.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -218,7 +221,8 @@ class _RegisterShopState extends State<RegisterShop> {
       width: MediaQuery.of(context).size.width,
       child: RaisedButton.icon(
         onPressed: () {
-          print('name = $name, user = $user, password = $password, phone = $phone');
+          print(
+              'name = $name, user = $user, password = $password, phone = $phone');
           if (file == null) {
             normalDialog(
                 context, 'Non Choose Image', 'Please Click Camera or Gallery');
@@ -231,12 +235,50 @@ class _RegisterShopState extends State<RegisterShop> {
               phone == null ||
               phone.isEmpty) {
             normalDialog(context, 'Have Space', 'Please Fill Every Blank');
-          } else {}
+          } else {
+            uploadImageToServer();
+          }
         },
         icon: Icon(Icons.cloud_upload),
         label: Text('Register'),
       ),
     );
+  }
+
+  Future<void> uploadImageToServer() async {
+    String url = MyConstant().urlSaveFile;
+    Random random = Random();
+    int i = random.nextInt(100000);
+    String nameFile = 'shop$i.jpg';
+
+    try {
+      Map<String, dynamic> map = Map();
+      map['file'] = UploadFileInfo(file, nameFile);
+      FormData formData = FormData.from(map);
+      await Dio()
+          .post(url, data: formData)
+          .then((response) => insertDataToMySQL(nameFile))
+          .catchError(() {});
+    } catch (e) {}
+  }
+
+  Future<void> insertDataToMySQL(String string) async {
+    String urlAPI =
+        '${MyConstant().urlAddUserShop}?isAdd=true&Name=$name&User=$user&Password=$password&UrlShop=urlImage&Lat=$lat&Lng=$lng';
+
+    try {
+      await Dio().get(urlAPI).then(
+            (response) {
+              if (response.toString() == 'true') {
+                
+                
+
+              } else {
+                normalDialog(context, 'Register False', 'Please Try Again');
+              }
+            },
+          );
+    } catch (e) {}
   }
 
   Widget showListView() {
