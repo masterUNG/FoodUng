@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:foodung/utility/my_style.dart';
 import 'package:foodung/widget/main_home.dart';
 import 'package:foodung/widget/register_delivery.dart';
 import 'package:foodung/widget/register_shop.dart';
 import 'package:foodung/widget/register_user.dart';
+import 'package:foodung/widget/signin_delivery.dart';
+import 'package:foodung/widget/signin_shop.dart';
+import 'package:foodung/widget/signin_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -13,8 +16,34 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // Field
   Widget currentWidget = MainHome();
+  String nameLogin, avatar;
+  bool statusLogin = false;  // false => no login
 
   // Method
+  @override
+  void initState() { 
+    super.initState();
+    checkLogin();
+  }
+
+  Future<void> checkLogin()async{
+    try {
+      
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      nameLogin = preferences.getString('Name');
+      avatar = preferences.getString('UrlShop');
+      print('nameLogin = $nameLogin, avatar = $avatar');
+
+      if (!(nameLogin == null || nameLogin.isEmpty)) {
+        setState(() {
+          statusLogin = true;
+        });
+      }
+      
+
+    } catch (e) {
+    }
+  }
 
   Widget showDrawer() {
     return Drawer(
@@ -22,6 +51,7 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           showHead(),
           menuHome(),
+          menuSignIn(),
           menuSignUp(),
         ],
       ),
@@ -35,12 +65,24 @@ class _HomeState extends State<Home> {
       subtitle: Text('For New Register'),
       onTap: () {
         Navigator.of(context).pop();
-        chooseRegister();
+        chooseRegister('Register', true);
       },
     );
   }
 
-  Widget showButton() {
+  Widget menuSignIn() {
+    return ListTile(
+      leading: Icon(Icons.fingerprint),
+      title: Text('Sign In'),
+      subtitle: Text('For Sign In'),
+      onTap: () {
+        Navigator.of(context).pop();
+        chooseRegister('Login', false);
+      },
+    );
+  }
+
+  Widget showButton(bool registerBool) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -50,10 +92,16 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               FlatButton.icon(
                 onPressed: () {
-                  setState(() {
-                    currentWidget = RegisterUser();
-                    Navigator.of(context).pop();
-                  });
+                  if (registerBool) {
+                    setState(() {
+                      currentWidget = RegisterUser();
+                    });
+                  } else {
+                    setState(() {
+                      currentWidget = SingInUser();
+                    });
+                  }
+                  Navigator.of(context).pop();
                 },
                 icon: Icon(Icons.check_box_outline_blank),
                 label: Text('User'),
@@ -67,10 +115,16 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               FlatButton.icon(
                 onPressed: () {
-                  setState(() {
-                    currentWidget = RegisterShop();
-                    Navigator.of(context).pop();
-                  });
+                  if (registerBool) {
+                    setState(() {
+                      currentWidget = RegisterShop();
+                    });
+                  } else {
+                    setState(() {
+                      currentWidget = SignInShip();
+                    });
+                  }
+                  Navigator.of(context).pop();
                 },
                 icon: Icon(Icons.check_box_outline_blank),
                 label: Text('Shop'),
@@ -84,10 +138,16 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               FlatButton.icon(
                 onPressed: () {
-                  setState(() {
-                    currentWidget = RegisterDelivery();
-                    Navigator.of(context).pop();
-                  });
+                  if (registerBool) {
+                    setState(() {
+                      currentWidget = RegisterDelivery();
+                    });
+                  } else {
+                    setState(() {
+                      currentWidget = SignDelivery();
+                    });
+                  }
+                  Navigator.of(context).pop();
                 },
                 icon: Icon(Icons.check_box_outline_blank),
                 label: Text('Delivery'),
@@ -99,12 +159,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Future<void> chooseRegister() async {
+  Future<void> chooseRegister(String title, bool registerBool) async {
     showDialog(
       context: context,
       builder: (value) => AlertDialog(
-        title: Text('Choose Register Type'),
-        content: showButton(),
+        title: Text('Choose $title Type'),
+        content: showButton(registerBool),
       ),
     );
   }
@@ -133,7 +193,7 @@ class _HomeState extends State<Home> {
   Widget showHead() {
     return UserAccountsDrawerHeader(
       currentAccountPicture: showLogo(),
-      accountName: Text('Guest'),
+      accountName: statusLogin ? Text(nameLogin) : Text('Guest') ,
       accountEmail: Text('Login'),
     );
   }
