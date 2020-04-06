@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:foodung/scaffold/home.dart';
 import 'package:foodung/utility/my_constant.dart';
 import 'package:foodung/utility/my_style.dart';
 import 'package:foodung/utility/normal_dialog.dart';
@@ -263,15 +264,19 @@ class _RegisterShopState extends State<RegisterShop> {
   }
 
   Future<void> insertDataToMySQL(String string) async {
+
+    urlImage = '${MyConstant().urlImagePathShop}$string';
+
     String urlAPI =
-        '${MyConstant().urlAddUserShop}?isAdd=true&Name=$name&User=$user&Password=$password&UrlShop=urlImage&Lat=$lat&Lng=$lng';
+        '${MyConstant().urlAddUserShop}?isAdd=true&Name=$name&User=$user&Password=$password&UrlShop=$urlImage&Lat=$lat&Lng=$lng';
 
     try {
       await Dio().get(urlAPI).then(
             (response) {
               if (response.toString() == 'true') {
                 
-                
+                MaterialPageRoute route = MaterialPageRoute(builder: (value)=>Home(),);
+                Navigator.of(context).pushAndRemoveUntil(route, (value)=>false);
 
               } else {
                 normalDialog(context, 'Register False', 'Please Try Again');
