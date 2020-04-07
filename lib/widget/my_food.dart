@@ -6,6 +6,8 @@ import 'package:foodung/models/food_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyFood extends StatefulWidget {
+  final String idShop;
+  MyFood({Key key, this.idShop}) : super(key: key);
   @override
   _MyFoodState createState() => _MyFoodState();
 }
@@ -14,11 +16,13 @@ class _MyFoodState extends State<MyFood> {
   // Field
   bool statusData = true;
   List<FoodModel> foodModels = List();
+  String myIdShop;
 
   // Method
   @override
   void initState() {
     super.initState();
+    myIdShop = widget.idShop;
     readAllFood();
   }
 
@@ -31,6 +35,9 @@ class _MyFoodState extends State<MyFood> {
 
   Future<void> readAllFood() async {
     String idShop = await getIdShip();
+    if (myIdShop != null) {
+      idShop = myIdShop;
+    }
     print('idShop ===> $idShop');
     String url =
         'https://www.androidthai.in.th/food/getFoodWhereIdShop.php?isAdd=true&idShop=$idShop';
@@ -100,7 +107,8 @@ class _MyFoodState extends State<MyFood> {
   Widget showNameFood(int index) => Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Container(width: MediaQuery.of(context).size.width*0.5-20,
+          Container(
+            width: MediaQuery.of(context).size.width * 0.5 - 20,
             child: Text(
               foodModels[index].nameFood,
               style: TextStyle(

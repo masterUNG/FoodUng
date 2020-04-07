@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:foodung/models/user_shop_model.dart';
+import 'package:foodung/scaffold/home.dart';
 import 'package:foodung/utility/my_constant.dart';
 import 'package:foodung/utility/my_style.dart';
+import 'package:foodung/widget/my_food.dart';
 
 class MainHome extends StatefulWidget {
   @override
@@ -66,6 +68,14 @@ class _MainHomeState extends State<MainHome> {
     return GestureDetector(
       onTap: () {
         print('You Click ${model.id}');
+        MaterialPageRoute route = MaterialPageRoute(
+          builder: (value) => Home(
+            currentWidget: MyFood(
+              idShop: model.id,
+            ),
+          ),
+        );
+        Navigator.of(context).pushAndRemoveUntil(route, (value)=>false);
       },
       child: Card(
         child: Column(
