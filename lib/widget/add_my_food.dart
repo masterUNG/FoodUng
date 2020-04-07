@@ -1,8 +1,12 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:foodung/scaffold/home.dart';
 import 'package:foodung/utility/my_style.dart';
 import 'package:foodung/utility/normal_dialog.dart';
+import 'package:foodung/widget/my_food.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -86,7 +90,8 @@ class _AddMyFoodState extends State<AddMyFood> {
       children: <Widget>[
         Container(
           width: 250.0,
-          child: TextField(keyboardType: TextInputType.number,
+          child: TextField(
+            keyboardType: TextInputType.number,
             onChanged: (value) => priceFood = value.trim(),
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.attach_money),
@@ -156,12 +161,54 @@ class _AddMyFoodState extends State<AddMyFood> {
               priceFood == null ||
               priceFood.isEmpty) {
             normalDialog(context, 'Have Space', 'Please Fill Every Blank');
-          } else {}
+          } else {
+            uploadImage();
+          }
         },
         icon: Icon(Icons.fastfood),
         label: Text('Save Food'),
       ),
     );
+  }
+
+  Future<void> uploadImage() async {
+    try {
+      String url = 'https://www.androidthai.in.th/food/saveFood.php';
+      Random random = Random();
+      int i = random.nextInt(100000);
+      String nameImage = 'food$i.jpg';
+      print('nameImage = $nameImage');
+
+      Map<String, dynamic> map = Map();
+      map['file'] = UploadFileInfo(file, nameImage);
+      FormData formData = FormData.from(map);
+      await Dio().post(url, data: formData).then(
+            (response) {
+              print('response ===>>> $response');
+              urlFood = 'https://www.androidthai.in.th/food/Food/$nameImage';
+              print('urlFood ===>>> $urlFood');
+              saveFoodThread();
+            },
+          );
+    } catch (e) {
+      
+    }
+  }
+
+  Future<void> saveFoodThread() async {
+    try {
+      
+      String url = 'https://www.androidthai.in.th/food/addFoodShop.php?isAdd=true&idShop=$idShop&NameFood=$nameFood&DetailFood=$detailFood&UrlFood=$urlFood&PriceFood=$priceFood&Score=$score';
+      
+      Response response = await Dio().get(url);
+      if (response.toString() == 'true') {
+        MaterialPageRoute route = MaterialPageRoute(builder: (value)=>Home(currentWidget: MyFood(),));
+        Navigator.of(context).pushAndRemoveUntil(route, (value)=>false);
+      } else {
+        normalDialog(context, 'Cannot Add Food', 'Please Try Again');
+      }
+
+    } catch (e) {}
   }
 
   @override

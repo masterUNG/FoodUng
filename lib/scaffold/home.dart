@@ -11,6 +11,9 @@ import 'package:foodung/widget/signin_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
+  final Widget currentWidget;
+  Home({Key key, this.currentWidget}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -25,7 +28,17 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    checkWidget();
     checkLogin();
+  }
+
+  void checkWidget(){
+    Widget myWidget = widget.currentWidget;
+    if (myWidget != null) {
+      setState(() {
+        currentWidget = myWidget;
+      });
+    }
   }
 
   Future<void> checkLogin() async {
