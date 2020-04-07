@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:foodung/widget/add_my_food.dart';
 import 'package:foodung/widget/main_home.dart';
+import 'package:foodung/widget/my_food.dart';
 import 'package:foodung/widget/register_delivery.dart';
 import 'package:foodung/widget/register_shop.dart';
 import 'package:foodung/widget/register_user.dart';
@@ -17,18 +19,17 @@ class _HomeState extends State<Home> {
   // Field
   Widget currentWidget = MainHome();
   String nameLogin, avatar;
-  bool statusLogin = false;  // false => no login
+  bool statusLogin = false; // false => no login
 
   // Method
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     checkLogin();
   }
 
-  Future<void> checkLogin()async{
+  Future<void> checkLogin() async {
     try {
-      
       SharedPreferences preferences = await SharedPreferences.getInstance();
       nameLogin = preferences.getString('Name');
       avatar = preferences.getString('UrlShop');
@@ -39,22 +40,73 @@ class _HomeState extends State<Home> {
           statusLogin = true;
         });
       }
-      
-
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Widget showDrawer() {
     return Drawer(
-      child: ListView(
-        children: <Widget>[
-          showHead(),
-          menuHome(),
-          menuSignIn(),
-          menuSignUp(),
-        ],
-      ),
+      child: statusLogin ? shopList() : generalList(),
+    );
+  }
+
+  ListView generalList() {
+    return ListView(
+      children: <Widget>[
+        showHead(),
+        menuHome(),
+        menuSignIn(),
+        menuSignUp(),
+      ],
+    );
+  }
+
+  ListView shopList() {
+    return ListView(
+      children: <Widget>[
+        showHead(),
+        menuHome(),
+        menuMyFood(),
+        menuAddMyFood(),
+      ],
+    );
+  }
+
+  Widget menuMyFood() {
+    return ListTile(
+      leading: Icon(Icons.fastfood),
+      title: Text('Menu Food'),
+      subtitle: Text('เมนู ร้านอาหารของเรา'),
+      onTap: () {
+        Navigator.of(context).pop();
+        setState(() {
+          currentWidget = MyFood();
+        });
+      },
+    );
+  }
+
+  Widget menuAddMyFood() {
+    return ListTile(
+      leading: Icon(Icons.add),
+      title: Text('Add MenuFood'),
+      subtitle: Text('เพิ่ม เมนู ร้านอาหารของเรา'),
+      onTap: () {
+        Navigator.of(context).pop();
+        setState(() {
+          currentWidget = AddMyFood();
+        });
+      },
+    );
+  }
+
+  Widget menu() {
+    return ListTile(
+      leading: Icon(Icons.android),
+      title: Text('text'),
+      subtitle: Text('sub text'),
+      onTap: () {
+        Navigator.of(context).pop();
+      },
     );
   }
 
@@ -192,11 +244,15 @@ class _HomeState extends State<Home> {
 
   Widget showHead() {
     return UserAccountsDrawerHeader(
-      currentAccountPicture: showLogo(),
-      accountName: statusLogin ? Text(nameLogin) : Text('Guest') ,
+      currentAccountPicture: avatar == null ? showLogo() : showAvatar(),
+      accountName: statusLogin ? Text(nameLogin) : Text('Guest'),
       accountEmail: Text('Login'),
     );
   }
+
+  Widget showAvatar() => CircleAvatar(
+        backgroundImage: NetworkImage(avatar),
+      );
 
   @override
   Widget build(BuildContext context) {

@@ -43,8 +43,8 @@ class _MainHomeState extends State<MainHome> {
 
   Widget showImageShop(UserShopModel model) {
     return Container(
-      width: 100.0,
-      height: 100.0,
+      width: 60.0,
+      height: 60.0,
       child: CircleAvatar(
         backgroundImage: NetworkImage(model.urlShop),
       ),
@@ -64,7 +64,8 @@ class _MainHomeState extends State<MainHome> {
 
   Widget createCard(UserShopModel model) {
     return Card(
-      child: Column(mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           showImageShop(model),
@@ -74,14 +75,20 @@ class _MainHomeState extends State<MainHome> {
     );
   }
 
-  Text showName(UserShopModel model) => Text(model.name, style: TextStyle(fontSize: 18.0,),);
+  Text showName(UserShopModel model) => Text(
+        model.name,
+        style: TextStyle(
+          fontSize: 16.0,
+        ),
+      );
 
   Widget showShop() {
     return showWidgets.length == 0
         ? MyStyle().showProgress()
         : Expanded(
-            child: GridView.extent(
-              maxCrossAxisExtent: 180.0,
+            child: GridView.extent(mainAxisSpacing: 8.0,
+              crossAxisSpacing: 8.0,
+              maxCrossAxisExtent: 130.0,
               children: showWidgets,
             ),
           );
