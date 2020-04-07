@@ -63,14 +63,19 @@ class _MainHomeState extends State<MainHome> {
   }
 
   Widget createCard(UserShopModel model) {
-    return Card(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          showImageShop(model),
-          showName(model),
-        ],
+    return GestureDetector(
+      onTap: () {
+        print('You Click ${model.id}');
+      },
+      child: Card(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            showImageShop(model),
+            showName(model),
+          ],
+        ),
       ),
     );
   }
@@ -86,7 +91,8 @@ class _MainHomeState extends State<MainHome> {
     return showWidgets.length == 0
         ? MyStyle().showProgress()
         : Expanded(
-            child: GridView.extent(mainAxisSpacing: 8.0,
+            child: GridView.extent(
+              mainAxisSpacing: 8.0,
               crossAxisSpacing: 8.0,
               maxCrossAxisExtent: 130.0,
               children: showWidgets,
